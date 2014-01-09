@@ -2,21 +2,21 @@
  * NumericStepper.as
  * Keith Peters
  * version 0.9.10
- * 
+ *
  * A component allowing for entering a numeric value with the keyboard, or by pressing up/down buttons.
- * 
+ *
  * Copyright (c) 2011 Keith Peters
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -28,13 +28,13 @@
 
 package com.bit101.components
 {
-	
+
 	import flash.display.DisplayObjectContainer;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.events.TimerEvent;
 	import flash.utils.Timer;
-	
+
 	[Event(name="change", type="flash.events.Event")]
 	public class NumericStepper extends Component
 	{
@@ -54,7 +54,7 @@ package com.bit101.components
 		protected var _delayTimer:Timer;
 		protected var _repeatTimer:Timer;
 		protected var _direction:String;
-		
+
 		/**
 		 * Constructor
 		 * @param parent The parent DisplayObjectContainer on which to add this Slider.
@@ -70,7 +70,17 @@ package com.bit101.components
 				addEventListener(Event.CHANGE, defaultHandler);
 			}
 		}
-		
+
+
+		override public function setSize(w:Number, h:Number):void
+		{
+			_plusBtn.setSize(w * .3, h);
+			_minusBtn.setSize(w *.3, h);
+			_valueText.setSize(w * .4, h);
+			super.setSize(w, h);
+		}
+
+
 		/**
 		 * Initializes the component.
 		 */
@@ -83,7 +93,7 @@ package com.bit101.components
 			_repeatTimer = new Timer(_repeatTime);
 			_repeatTimer.addEventListener(TimerEvent.TIMER, onRepeat);
 		}
-		
+
 		/**
 		 * Creates and adds the child display objects of this component.
 		 */
@@ -98,7 +108,7 @@ package com.bit101.components
 			_plusBtn.addEventListener(MouseEvent.MOUSE_DOWN, onPlus);
 			_plusBtn.setSize(16, 16);
 		}
-		
+
 		protected function increment():void
 		{
 			if(_value + _step <= _maximum)
@@ -108,7 +118,7 @@ package com.bit101.components
 				dispatchEvent(new Event(Event.CHANGE));
 			}
 		}
-		
+
 		protected function decrement():void
 		{
 			if(_value - _step >= _minimum)
@@ -118,34 +128,40 @@ package com.bit101.components
 				dispatchEvent(new Event(Event.CHANGE));
 			}
 		}
-		
-		
-		
-		
+
+
+
+
 		///////////////////////////////////
 		// public methods
 		///////////////////////////////////
-		
+
 		/**
 		 * Draws the visual ui of the component.
 		 */
 		public override function draw():void
 		{
-			_plusBtn.x = _width - 16;
-			_minusBtn.x = _width - 32;
+//			_plusBtn.x = _width - 16;
+//			_minusBtn.x = _width - 32;
+//			_valueText.text = (Math.round(_value * Math.pow(10, _labelPrecision)) / Math.pow(10, _labelPrecision)).toString();
+//			_valueText.width = _width - 32;
+//			_valueText.draw();
+			_plusBtn.x = _width - _plusBtn.width;
+			_minusBtn.x = 0;
 			_valueText.text = (Math.round(_value * Math.pow(10, _labelPrecision)) / Math.pow(10, _labelPrecision)).toString();
-			_valueText.width = _width - 32;
+			_valueText.width = _width - _minusBtn.width - _plusBtn.width;
+			_valueText.x = _minusBtn.width;
 			_valueText.draw();
 		}
-		
-		
-		
-		
-		
+
+
+
+
+
 		///////////////////////////////////
 		// event handlers
 		///////////////////////////////////
-		
+
 		/**
 		 * Called when the minus button is pressed. Decrements the value by the step amount.
 		 */
@@ -156,7 +172,7 @@ package com.bit101.components
 			_delayTimer.start();
 			stage.addEventListener(MouseEvent.MOUSE_UP, onMouseGoUp);
 		}
-		
+
 		/**
 		 * Called when the plus button is pressed. Increments the value by the step amount.
 		 */
@@ -167,13 +183,13 @@ package com.bit101.components
 			_delayTimer.start();
 			stage.addEventListener(MouseEvent.MOUSE_UP, onMouseGoUp);
 		}
-		
+
 		protected function onMouseGoUp(event:MouseEvent):void
 		{
 			_delayTimer.stop();
 			_repeatTimer.stop();
 		}
-		
+
 		/**
 		 * Called when the value is changed manually.
 		 */
@@ -205,13 +221,13 @@ package com.bit101.components
 				decrement();
 			}
 		}
-		
-		
-		
+
+
+
 		///////////////////////////////////
 		// getter/setters
 		///////////////////////////////////
-		
+
 		/**
 		 * Sets / gets the current value of this component.
 		 */
@@ -233,7 +249,7 @@ package com.bit101.components
 		 */
 		public function set step(value:Number):void
 		{
-			if(value < 0) 
+			if(value < 0)
 			{
 				throw new Error("NumericStepper step must be positive.");
 			}
